@@ -8,14 +8,16 @@ import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
 import Board from "./Components/Board";
+import CreateBoard from "./Components/CreateBoard";
 
 const Wrapper = styled.div`
   display: flex;
-  width: 100vw;
   margin: 0 auto;
   justify-content: center;
   align-items: center;
-  height: 90vh;
+  width: 100vw;
+  display: grid;
+  height: 80vh;
 `;
 
 const Boards = styled.div`
@@ -25,8 +27,6 @@ const Boards = styled.div`
   width: 100%;
   gap: 10px;
 `;
-
-const DropBoards = styled.div``;
 
 const DeleteWrapper = styled.div`
   height: 10vh;
@@ -39,6 +39,13 @@ const Area = styled.div`
   span {
     font-size: 30px;
   }
+`;
+
+const CreateWrapper = styled.div`
+  height: 10vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 function App() {
@@ -84,7 +91,7 @@ function App() {
         const taskObj = boardCopy[source.index];
         boardCopy.splice(source.index, 1);
         boardCopy.splice(destination?.index, 0, taskObj);
-        const newBoard = { [source.droppableId]: boardCopy };
+        const newBoard = { ...allBoards, [source.droppableId]: boardCopy };
         localStorage.setItem("todo", JSON.stringify(newBoard));
         return newBoard;
       });
@@ -107,6 +114,9 @@ function App() {
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
+      <CreateWrapper>
+        <CreateBoard />
+      </CreateWrapper>
       <Wrapper>
         <Droppable droppableId="boardsdiv" type="board" direction="horizontal">
           {(magic) => (

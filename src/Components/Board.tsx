@@ -14,6 +14,7 @@ const Wrapper = styled.div`
   min-height: 300px;
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 
 const Title = styled.h2`
@@ -57,9 +58,25 @@ const Form = styled.form`
   }
 `;
 
+const Delete = styled.span`
+  position: absolute;
+  right: 10px;
+  font-weight: 600;
+`;
+
 function Board({ toDos, boardId, boardIndex }: IBoardProps) {
   const setToDos = useSetRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
+
+  const deleteClick = () => {
+    setToDos((oldToDos) => {
+      const newToDos = { ...oldToDos };
+      delete newToDos[boardId];
+      localStorage.setItem("todo", JSON.stringify(newToDos));
+      return newToDos;
+    });
+  };
+
   const onVaild = ({ toDo }: IForm) => {
     const newToDo = {
       id: Date.now(),
@@ -87,6 +104,7 @@ function Board({ toDos, boardId, boardIndex }: IBoardProps) {
           {...magic.dragHandleProps}
         >
           <Title>{boardId}</Title>
+          <Delete onClick={deleteClick}>X</Delete>
           <Form onSubmit={handleSubmit(onVaild)}>
             <input
               {...register("toDo", { required: true })}
