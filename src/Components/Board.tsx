@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { ITodo, toDoState } from "../atoms";
 import DragabbleCard from "./DragabbleCard";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isDragging: boolean }>`
   width: 300px;
   padding-top: 10px;
   background-color: ${(props) => props.theme.boardColor};
@@ -14,6 +14,8 @@ const Wrapper = styled.div`
   min-height: 300px;
   display: flex;
   flex-direction: column;
+  box-shadow: ${(props) =>
+    props.isDragging ? "0px 2px 20px rgba(0, 0, 0, 0.5)" : "none"};
   position: relative;
 `;
 
@@ -53,15 +55,24 @@ interface IForm {
 
 const Form = styled.form`
   width: 100%;
-  input {
-    width: 100%;
-  }
+  display: flex;
+  justify-content: center;
 `;
 
 const Delete = styled.span`
   position: absolute;
   right: 10px;
   font-weight: 600;
+  cursor: pointer;
+`;
+
+const Create = styled.input`
+  all: unset;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: white;
+  cursor: auto;
 `;
 
 function Board({ toDos, boardId, boardIndex }: IBoardProps) {
@@ -97,16 +108,16 @@ function Board({ toDos, boardId, boardIndex }: IBoardProps) {
   };
   return (
     <Draggable draggableId={boardId} index={boardIndex}>
-      {(magic) => (
+      {(magic, info) => (
         <Wrapper
           ref={magic.innerRef}
           {...magic.draggableProps}
-          {...magic.dragHandleProps}
+          isDragging={info.isDragging}
         >
-          <Title>{boardId}</Title>
+          <Title {...magic.dragHandleProps}>{boardId}</Title>
           <Delete onClick={deleteClick}>X</Delete>
           <Form onSubmit={handleSubmit(onVaild)}>
-            <input
+            <Create
               {...register("toDo", { required: true })}
               type="text"
               placeholder={`${boardId} 추가`}
